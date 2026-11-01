@@ -1,0 +1,95 @@
+{
+  "server": {
+    "reported_version": "7.0.42",
+    "ferretdb": "v1.24.0"
+  },
+  "setup": [
+    "createCollection with $jsonSchema validator: NOT SUPPORTED by this server (create)",
+    "createCollection without validator: ok",
+    "unique index uq_event_id on event_id: ok",
+    "index ix_trip_time on (trip_id, occurred_at): ok"
+  ],
+  "inserted": 2,
+  "queries": [
+    {
+      "label": "Q1. Timeline for trip 1",
+      "query": "find({trip_id: 1}).sort({occurred_at: 1})",
+      "result": [
+        {
+          "event_id": "EVT-0001",
+          "event_type": "trip_requested",
+          "occurred_at": "2026-10-05T06:40:00.000Z"
+        },
+        {
+          "event_id": "EVT-0002",
+          "event_type": "trip_completed",
+          "occurred_at": "2026-10-05T07:21:00.000Z"
+        }
+      ]
+    },
+    {
+      "label": "Q2. Completed trips with a fare above 4000",
+      "query": "find({event_type: 'trip_completed', 'details.fare_amount': {$gt: 4000}})",
+      "result": [
+        {
+          "trip_id": 1,
+          "driver": {
+            "name": "Morgan Lee"
+          },
+          "details": {
+            "fare_amount": 4850
+          }
+        }
+      ]
+    },
+    {
+      "label": "Q3. Event count by type",
+      "query": "aggregate([{$group: {_id: '$event_type', events: {$sum: 1}}}, {$sort: {_id: 1}}])",
+      "result": [
+        {
+          "_id": "trip_completed",
+          "events": 1
+        },
+        {
+          "_id": "trip_requested",
+          "events": 1
+        }
+      ]
+    },
+    {
+      "label": "Q4. Events handled by driver 1 (embedded snapshot)",
+      "query": "find({'driver.driver_id': 1})",
+      "result": [
+        {
+          "event_id": "EVT-0002",
+          "rider": {
+            "name": "Avery Quinn"
+          },
+          "driver": {
+            "vehicle_plate": "LND-482-KJ"
+          }
+        }
+      ]
+    }
+  ],
+  "validation": [
+    {
+      "test": "V1. occurred_at stored as a string",
+      "expected": "rejected by $jsonSchema (code 121 DocumentValidationFailure)",
+      "outcome": "ACCEPTED",
+      "note": "validator not active on this server; not verified here"
+    },
+    {
+      "test": "V2. duplicate event_id EVT-0001",
+      "expected": "rejected by unique index (code 11000 DuplicateKey)",
+      "outcome": "rejected",
+      "code": 11000,
+      "codeName": null
+    }
+  ],
+  "notes": [
+    "The server did not accept the $jsonSchema validator, so test V1 above is not evidence of validation. Run mongodb/trip_events.mongosh.js on MongoDB 6 or 7 to verify it."
+  ],
+  "final_count": 2,
+  "q1_winning_plan": "{\"queryPlanner\":{\"Plan\":{\"Async Capable\":false,\"Relation Name\":\"trip_events_d02342fa\",\"Schema\":\"ridehailing\",\"Alias\":\"trip_events_d02342fa\",\"Plan Rows\":14,\"Parallel Aware\":false,\"Startup Cost\":0,\"Total Cost\":30.4,\"Plan Width\":32,\"Output\":[\"_jsonb\"],\"Filter\":\"((trip_events_d02342fa._jsonb -> 'trip_id'::text) @> '1'::jsonb)\",\"Node Type\":\"Seq Scan\"}},\"explainVersion\":\"1\",\"command\":{\"find\":\"trip_event"
+}
