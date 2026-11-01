@@ -1,0 +1,26 @@
+// Proposed deployment. Render: dot -Tpng -Gdpi=170 replica_set.dot -o replica_set.png
+digraph rs {
+  graph [rankdir=LR, fontname="DejaVu Sans", bgcolor="white", pad=0.3, nodesep=0.5, ranksep=0.9];
+  node  [fontname="DejaVu Sans", fontsize=10, shape=box, style="rounded,filled", fillcolor="#eef2f7", color="#1f3a5f"];
+  edge  [fontname="DejaVu Sans", fontsize=9, color="#4a5568"];
+
+  app  [label="Dispatch service\n(writes, w: majority)"];
+  ana  [label="Analyst reports\n(secondaryPreferred)"];
+  pg   [label="PostgreSQL primary\nrider, driver, trip, payment", fillcolor="#fdf6e3"];
+  pgs  [label="PostgreSQL standby\nstreaming replication", fillcolor="#fdf6e3"];
+  bak  [label="Backups\npg_basebackup + WAL archive\nmongodump / snapshots", shape=cylinder, fillcolor="#f0f0f0"];
+
+  subgraph cluster_a { label="Zone A"; style=dashed; color="#9aa5b1"; fontname="DejaVu Sans"; a [label="mongo-a\nPRIMARY", fillcolor="#1f3a5f", fontcolor="white"]; }
+  subgraph cluster_b { label="Zone B"; style=dashed; color="#9aa5b1"; fontname="DejaVu Sans"; b [label="mongo-b\nSECONDARY"]; }
+  subgraph cluster_c { label="Zone C"; style=dashed; color="#9aa5b1"; fontname="DejaVu Sans"; c [label="mongo-c\nSECONDARY"]; }
+
+  app -> a   [label="trip events"];
+  app -> pg  [label="trips, payments"];
+  a -> b     [label="oplog"];
+  a -> c     [label="oplog"];
+  ana -> b   [style=dashed, label="reads"];
+  ana -> c   [style=dashed];
+  pg -> pgs  [label="WAL stream"];
+  pg -> bak  [style=dotted];
+  b -> bak   [style=dotted];
+}

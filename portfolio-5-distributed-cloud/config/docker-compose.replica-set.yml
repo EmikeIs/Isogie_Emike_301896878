@@ -1,0 +1,35 @@
+# Proposed three-member MongoDB replica set for trip_events.
+# This file documents the design; it was NOT deployed for this portfolio.
+# In production each member would run in a separate availability zone
+# (zone-a, zone-b, zone-c). Locally, the three containers stand in for them.
+#
+#   docker compose -f docker-compose.replica-set.yml up -d
+#   docker exec -it rh-mongo-a mongosh --file /config/rs-initiate.js
+services:
+  mongo-a:
+    image: mongo:7.0
+    container_name: rh-mongo-a
+    command: ["mongod", "--replSet", "rh-events", "--bind_ip_all"]
+    ports: ["27017:27017"]
+    volumes:
+      - mongo-a-data:/data/db
+      - ./:/config:ro
+    labels: { zone: "zone-a" }
+  mongo-b:
+    image: mongo:7.0
+    container_name: rh-mongo-b
+    command: ["mongod", "--replSet", "rh-events", "--bind_ip_all"]
+    ports: ["27018:27017"]
+    volumes: [mongo-b-data:/data/db]
+    labels: { zone: "zone-b" }
+  mongo-c:
+    image: mongo:7.0
+    container_name: rh-mongo-c
+    command: ["mongod", "--replSet", "rh-events", "--bind_ip_all"]
+    ports: ["27019:27017"]
+    volumes: [mongo-c-data:/data/db]
+    labels: { zone: "zone-c" }
+volumes:
+  mongo-a-data:
+  mongo-b-data:
+  mongo-c-data:
