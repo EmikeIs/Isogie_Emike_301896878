@@ -1,0 +1,10 @@
+{
+  "default_isolation": "read committed",
+  "after_rollback": 1,
+  "lost_update_final": 2,
+  "for_update_final": 3,
+  "for_update_wait_ms": 307,
+  "repeatable_read_second_writer": "40001 could not serialize access due to concurrent update",
+  "repeatable_read_final": 2,
+  "business_fields_unchanged": true
+}
