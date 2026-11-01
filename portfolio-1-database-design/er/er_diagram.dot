@@ -1,0 +1,65 @@
+// ER diagram for the Ride-Hailing Trip and Payment Records schema.
+// Render: dot -Tpng -Gdpi=200 er_diagram.dot -o er_diagram.png
+digraph ride_hailing {
+    graph [rankdir=LR, bgcolor="white", pad=0.3, nodesep=0.7, ranksep=1.1, fontname="DejaVu Sans"];
+    node  [shape=plain, fontname="DejaVu Sans", fontsize=10];
+    edge  [fontname="DejaVu Sans", fontsize=9, color="#4a5568", arrowsize=0.7];
+
+    rider [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="5" color="#2d3748">
+      <tr><td colspan="3" bgcolor="#1f3a5f"><font color="white"><b>rider</b></font></td></tr>
+      <tr><td>PK</td><td align="left">rider_id</td><td align="left" port="pk">integer</td></tr>
+      <tr><td></td><td align="left">full_name</td><td align="left">varchar(100)</td></tr>
+      <tr><td>UK</td><td align="left">phone</td><td align="left">varchar(16)</td></tr>
+      <tr><td>UK</td><td align="left">email</td><td align="left">varchar(120) null</td></tr>
+      <tr><td></td><td align="left">created_at</td><td align="left">timestamptz</td></tr>
+    </table>>];
+
+    driver [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="5" color="#2d3748">
+      <tr><td colspan="3" bgcolor="#1f3a5f"><font color="white"><b>driver</b></font></td></tr>
+      <tr><td>PK</td><td align="left">driver_id</td><td align="left" port="pk">integer</td></tr>
+      <tr><td></td><td align="left">full_name</td><td align="left">varchar(100)</td></tr>
+      <tr><td>UK</td><td align="left">phone</td><td align="left">varchar(16)</td></tr>
+      <tr><td>UK</td><td align="left">licence_no</td><td align="left">varchar(20)</td></tr>
+      <tr><td>UK</td><td align="left">vehicle_plate</td><td align="left">varchar(12)</td></tr>
+      <tr><td></td><td align="left">vehicle_type</td><td align="left">varchar(10)</td></tr>
+      <tr><td></td><td align="left">rating</td><td align="left">numeric(2,1) null</td></tr>
+      <tr><td></td><td align="left">is_available</td><td align="left">boolean</td></tr>
+      <tr><td></td><td align="left">created_at</td><td align="left">timestamptz</td></tr>
+    </table>>];
+
+    trip [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="5" color="#2d3748">
+      <tr><td colspan="3" bgcolor="#1f3a5f"><font color="white"><b>trip</b></font></td></tr>
+      <tr><td>PK</td><td align="left">trip_id</td><td align="left" port="pk">integer</td></tr>
+      <tr><td port="rider">FK</td><td align="left">rider_id</td><td align="left">integer</td></tr>
+      <tr><td port="driver">FK, UK*</td><td align="left">driver_id</td><td align="left">integer null</td></tr>
+      <tr><td></td><td align="left">pickup_zone</td><td align="left">varchar(40)</td></tr>
+      <tr><td></td><td align="left">dropoff_zone</td><td align="left">varchar(40)</td></tr>
+      <tr><td></td><td align="left">status</td><td align="left">varchar(12)</td></tr>
+      <tr><td></td><td align="left">requested_at</td><td align="left">timestamptz</td></tr>
+      <tr><td></td><td align="left">started_at</td><td align="left">timestamptz null</td></tr>
+      <tr><td></td><td align="left">completed_at</td><td align="left">timestamptz null</td></tr>
+      <tr><td></td><td align="left">distance_km</td><td align="left">numeric(6,2) null</td></tr>
+      <tr><td></td><td align="left">fare_amount</td><td align="left">numeric(10,2) null</td></tr>
+      <tr><td colspan="3" align="left"><font point-size="8">* unique only while status is assigned or in_progress</font></td></tr>
+    </table>>];
+
+    payment [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="5" color="#2d3748">
+      <tr><td colspan="3" bgcolor="#1f3a5f"><font color="white"><b>payment</b></font></td></tr>
+      <tr><td>PK</td><td align="left">payment_id</td><td align="left">integer</td></tr>
+      <tr><td port="trip">FK, UK</td><td align="left">trip_id</td><td align="left">integer</td></tr>
+      <tr><td></td><td align="left">amount</td><td align="left">numeric(10,2)</td></tr>
+      <tr><td></td><td align="left">currency</td><td align="left">char(3)</td></tr>
+      <tr><td></td><td align="left">method</td><td align="left">varchar(10)</td></tr>
+      <tr><td></td><td align="left">status</td><td align="left">varchar(10)</td></tr>
+      <tr><td>UK</td><td align="left">reference</td><td align="left">varchar(40)</td></tr>
+      <tr><td></td><td align="left">paid_at</td><td align="left">timestamptz null</td></tr>
+    </table>>];
+
+    rider:pk:e -> trip:rider:w   [label="requests\n1 to many", dir=both, arrowtail=tee, arrowhead=crow];
+    driver:pk:e -> trip:driver:w  [label="drives\n0..1 to many", dir=both, arrowtail=teeodot, arrowhead=crow];
+    trip:pk:e -> payment:trip:w [label="is paid by\n1 to 0..1", dir=both, arrowtail=tee, arrowhead=teeodot];
+}

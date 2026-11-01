@@ -1,0 +1,54 @@
+== UNF: one row per rider, trips packed into one cell ==
+  rider_phone   |  rider_name  |                                                                  trips                                                                  
+----------------+--------------+-----------------------------------------------------------------------------------------------------------------------------------------
+ +2348030000101 | Avery Quinn  | 1: Lekki>Victoria Island, Morgan Lee (+2348090000201, LND-482-KJ), 4850, PAY-2026-10-05-0001 card | 2: Victoria Island>Lekki, cancelled
+ +2348030000102 | Tobi Adeyemi | 1: Yaba>Ikeja, Ifeanyi Bello (+2348090000202, EKY-115-AA), in progress
+(2 rows)
+
+== 1NF: atomic values, key (rider_phone, trip_seq) ==
+  rider_phone   | trip_seq |  rider_name  |   pickup_zone   |  dropoff_zone   |   status    |  driver_phone  |  driver_name  | vehicle_plate | fare_amount |     payment_ref     | payment_method 
+----------------+----------+--------------+-----------------+-----------------+-------------+----------------+---------------+---------------+-------------+---------------------+----------------
+ +2348030000101 |        1 | Avery Quinn  | Lekki           | Victoria Island | completed   | +2348090000201 | Morgan Lee    | LND-482-KJ    |     4850.00 | PAY-2026-10-05-0001 | card
+ +2348030000101 |        2 | Avery Quinn  | Victoria Island | Lekki           | cancelled   |                |               |               |             |                     | 
+ +2348030000102 |        1 | Tobi Adeyemi | Yaba            | Ikeja           | in_progress | +2348090000202 | Ifeanyi Bello | EKY-115-AA    |             |                     | 
+(3 rows)
+
+== 2NF: rider details split out ==
+  rider_phone   |  rider_name  
+----------------+--------------
+ +2348030000101 | Avery Quinn
+ +2348030000102 | Tobi Adeyemi
+(2 rows)
+
+  rider_phone   | trip_seq |   pickup_zone   |  dropoff_zone   |   status    |  driver_phone  |  driver_name  | vehicle_plate | fare_amount |     payment_ref     | payment_method 
+----------------+----------+-----------------+-----------------+-------------+----------------+---------------+---------------+-------------+---------------------+----------------
+ +2348030000101 |        1 | Lekki           | Victoria Island | completed   | +2348090000201 | Morgan Lee    | LND-482-KJ    |     4850.00 | PAY-2026-10-05-0001 | card
+ +2348030000101 |        2 | Victoria Island | Lekki           | cancelled   |                |               |               |             |                     | 
+ +2348030000102 |        1 | Yaba            | Ikeja           | in_progress | +2348090000202 | Ifeanyi Bello | EKY-115-AA    |             |                     | 
+(3 rows)
+
+== 3NF: driver and payment details split out ==
+  rider_phone   |  rider_name  
+----------------+--------------
+ +2348030000101 | Avery Quinn
+ +2348030000102 | Tobi Adeyemi
+(2 rows)
+
+  driver_phone  |  driver_name  | vehicle_plate 
+----------------+---------------+---------------
+ +2348090000201 | Morgan Lee    | LND-482-KJ
+ +2348090000202 | Ifeanyi Bello | EKY-115-AA
+(2 rows)
+
+  rider_phone   | trip_seq |  driver_phone  |   pickup_zone   |  dropoff_zone   |   status    | fare_amount 
+----------------+----------+----------------+-----------------+-----------------+-------------+-------------
+ +2348030000101 |        1 | +2348090000201 | Lekki           | Victoria Island | completed   |     4850.00
+ +2348030000101 |        2 |                | Victoria Island | Lekki           | cancelled   |            
+ +2348030000102 |        1 | +2348090000202 | Yaba            | Ikeja           | in_progress |            
+(3 rows)
+
+     payment_ref     |  rider_phone   | trip_seq | payment_method 
+---------------------+----------------+----------+----------------
+ PAY-2026-10-05-0001 | +2348030000101 |        1 | card
+(1 row)
+

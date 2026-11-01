@@ -1,0 +1,50 @@
+== Constraint test results ==
+ #  |  table  |               rule                | outcome  | sqlstate | expected error |            caught by            
+----+---------+-----------------------------------+----------+----------+----------------+---------------------------------
+  1 | rider   | name is required                  | rejected | 23502    | yes            | NOT NULL
+  2 | rider   | name cannot be blank              | rejected | 23514    | yes            | chk_rider_name
+  3 | rider   | phone must be unique              | rejected | 23505    | yes            | uq_rider_phone
+  4 | rider   | phone must be digits              | rejected | 23514    | yes            | chk_rider_phone
+  5 | rider   | email must look like an email     | rejected | 23514    | yes            | chk_rider_email
+  6 | rider   | email must be unique              | rejected | 23505    | yes            | uq_rider_email
+  7 | driver  | licence must be unique            | rejected | 23505    | yes            | uq_driver_licence
+  8 | driver  | plate must be unique              | rejected | 23505    | yes            | uq_driver_plate
+  9 | driver  | vehicle type from fixed list      | rejected | 23514    | yes            | chk_driver_vtype
+ 10 | driver  | rating between 1 and 5            | rejected | 23514    | yes            | chk_driver_rating
+ 11 | driver  | licence is required               | rejected | 23502    | yes            | NOT NULL
+ 12 | trip    | rider must exist                  | rejected | 23503    | yes            | trip_rider_id_fkey
+ 13 | trip    | driver must exist                 | rejected | 23503    | yes            | trip_driver_id_fkey
+ 14 | trip    | status from fixed list            | rejected | 23514    | yes            | chk_trip_status
+ 15 | trip    | requested trip has no driver      | rejected | 23514    | yes            | chk_trip_requested_no_driver
+ 16 | trip    | assigned trip needs a driver      | rejected | 23514    | yes            | chk_trip_driver_required
+ 17 | trip    | in-progress trip needs start time | rejected | 23514    | yes            | chk_trip_started
+ 18 | trip    | completed trip needs end time     | rejected | 23514    | yes            | chk_trip_completed
+ 19 | trip    | completed trip needs a fare       | rejected | 23514    | yes            | chk_trip_completed
+ 20 | trip    | start cannot be before request    | rejected | 23514    | yes            | chk_trip_time_order
+ 21 | trip    | end cannot be before start        | rejected | 23514    | yes            | chk_trip_time_order
+ 22 | trip    | fare cannot be negative           | rejected | 23514    | yes            | chk_trip_fare
+ 23 | trip    | distance must be positive         | rejected | 23514    | yes            | chk_trip_distance
+ 24 | trip    | pickup zone is required           | rejected | 23502    | yes            | NOT NULL
+ 25 | trip    | driver has one active trip only   | rejected | 23505    | yes            | uq_trip_driver_active
+ 26 | payment | trip must exist                   | rejected | 23503    | yes            | payment_trip_id_fkey
+ 27 | payment | one payment per trip              | rejected | 23505    | yes            | uq_payment_trip
+ 28 | payment | amount must be positive           | rejected | 23514    | yes            | chk_payment_amount
+ 29 | payment | method from fixed list            | rejected | 23514    | yes            | chk_payment_method
+ 30 | payment | only completed trips can be paid  | rejected | 23514    | yes            | payment_requires_completed_trip
+(30 rows)
+
+== Summary ==
+ rejected | accepted | matched_expected_error | total 
+----------+----------+------------------------+-------
+       30 |        0 |                     30 |    30
+(1 row)
+
+== Row counts before and after (valid sample rows must be unchanged) ==
+  table  | before | after | check_result 
+---------+--------+-------+--------------
+ rider   |      4 |     4 | unchanged
+ driver  |      3 |     3 | unchanged
+ trip    |      5 |     5 | unchanged
+ payment |      1 |     1 | unchanged
+(4 rows)
+

@@ -1,0 +1,33 @@
+== rider ==
+ rider_id |  full_name   |     phone      |          email           |       created_at       
+----------+--------------+----------------+--------------------------+------------------------
+        1 | Avery Quinn  | +2348030000101 | avery.quinn@example.com  | 2026-09-01 08:00:00+01
+        2 | Tobi Adeyemi | +2348030000102 | tobi.adeyemi@example.com | 2026-09-02 09:30:00+01
+        3 | Chiamaka Obi | +2348030000103 |                          | 2026-09-03 11:15:00+01
+        4 | Daniel Okoro | +2348030000104 | d.okoro@example.com      | 2026-09-04 14:45:00+01
+(4 rows)
+
+== driver ==
+ driver_id |   full_name   |     phone      |  licence_no  | vehicle_plate | vehicle_type | rating | is_available |       created_at       
+-----------+---------------+----------------+--------------+---------------+--------------+--------+--------------+------------------------
+         1 | Morgan Lee    | +2348090000201 | LAG-DL-20411 | LND-482-KJ    | sedan        |    4.8 | t            | 2026-08-20 10:00:00+01
+         2 | Ifeanyi Bello | +2348090000202 | LAG-DL-20412 | EKY-115-AA    | suv          |    4.6 | f            | 2026-08-21 10:00:00+01
+         3 | Sade Martins  | +2348090000203 | LAG-DL-20413 | KJA-903-BC    | minivan      |    4.9 | f            | 2026-08-22 10:00:00+01
+(3 rows)
+
+== trip ==
+ trip_id | rider_id | driver_id |   pickup_zone   |  dropoff_zone   |   status    |      requested_at      |       started_at       |      completed_at      | distance_km | fare_amount 
+---------+----------+-----------+-----------------+-----------------+-------------+------------------------+------------------------+------------------------+-------------+-------------
+       1 |        1 |         1 | Lekki           | Victoria Island | completed   | 2026-10-05 07:40:00+01 | 2026-10-05 07:52:00+01 | 2026-10-05 08:21:00+01 |       12.40 |     4850.00
+       2 |        2 |         2 | Yaba            | Ikeja           | in_progress | 2026-10-05 08:05:00+01 | 2026-10-05 08:14:00+01 |                        |             |            
+       3 |        3 |         3 | Ikeja           | Surulere        | assigned    | 2026-10-05 08:20:00+01 |                        |                        |             |            
+       4 |        4 |           | Surulere        | Yaba            | requested   | 2026-10-05 08:25:00+01 |                        |                        |             |            
+       5 |        1 |           | Victoria Island | Lekki           | cancelled   | 2026-10-04 18:10:00+01 |                        |                        |             |            
+(5 rows)
+
+== payment ==
+ payment_id | trip_id | amount  | currency | method |  status   |      reference      |        paid_at         
+------------+---------+---------+----------+--------+-----------+---------------------+------------------------
+          1 |       1 | 4850.00 | NGN      | card   | succeeded | PAY-2026-10-05-0001 | 2026-10-05 08:22:00+01
+(1 row)
+
