@@ -2,6 +2,8 @@
 
 **Ride-Hailing Trip and Payment Records** · Emike Isogie · Student ID 301896878
 
+GitHub repository: [https://github.com/EmikeIs/Isogie_Emike_301896878](https://github.com/EmikeIs/Isogie_Emike_301896878)
+
 ## Case study
 
 My case study is Ride-Hailing Trip and Payment Records, for a fictional ride-hailing service in Lagos. Riders request trips, drivers are matched to them, and each completed trip is paid for once. The database serves dispatchers creating trips and assigning available drivers, analysts reviewing trip activity, and payment operators recording charges. It stores riders, drivers, trips and payments in four tables named rider, driver, trip and payment, plus a MongoDB collection of trip events. It supports these operations: create trips and assign available drivers; review trips by status, time range and rider; summarise trip counts and fares by pickup zone; and record a payment for a trip. All records are fictional.

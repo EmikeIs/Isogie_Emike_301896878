@@ -12,7 +12,8 @@ cat > "$tmp/style.css" <<'CSS'
 @page { size: A4; margin: 16mm 17mm; }
 body { font-family: "DejaVu Serif", Georgia, serif; font-size: 10.4pt; line-height: 1.42; color: #1a202c; max-width: none; }
 h1 { font-family: "DejaVu Sans", sans-serif; font-size: 17pt; color: #1f3a5f; margin: 0 0 2pt; }
-h1 + p { margin-top: 0; color: #4a5568; }
+h1 + p { margin: 0; color: #4a5568; }
+h1 + p + p { margin: 0 0 4pt; font-size: 9.6pt; color: #4a5568; }
 h2 { font-family: "DejaVu Sans", sans-serif; font-size: 11.5pt; color: #1f3a5f; border-bottom: 1px solid #cbd5e0; padding-bottom: 2pt; margin: 12pt 0 4pt; }
 p { margin: 0 0 6pt; text-align: justify; }
 img { max-width: 100%; display: block; margin: 4pt auto; }
