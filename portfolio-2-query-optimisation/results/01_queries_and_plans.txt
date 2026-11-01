@@ -1,0 +1,94 @@
+== Q1. Paid trips: who rode, who drove, what was charged ==
+ trip_id |    rider    |   driver   |          route           | fare_amount | method |        paid_at         
+---------+-------------+------------+--------------------------+-------------+--------+------------------------
+       1 | Avery Quinn | Morgan Lee | Lekki -> Victoria Island |     4850.00 | card   | 2026-10-05 08:22:00+01
+(1 row)
+
+== Q1 plan ==
+                                               QUERY PLAN                                               
+--------------------------------------------------------------------------------------------------------
+ Sort  (cost=4.25..4.26 rows=1 width=46) (actual rows=1 loops=1)
+   Sort Key: p.paid_at
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=4
+   ->  Nested Loop  (cost=0.00..4.25 rows=1 width=46) (actual rows=1 loops=1)
+         Join Filter: (p.trip_id = t.trip_id)
+         Buffers: shared hit=4
+         ->  Nested Loop  (cost=0.00..3.22 rows=1 width=33) (actual rows=1 loops=1)
+               Join Filter: (d.driver_id = t.driver_id)
+               Buffers: shared hit=3
+               ->  Nested Loop  (cost=0.00..2.15 rows=1 width=25) (actual rows=1 loops=1)
+                     Join Filter: (r.rider_id = t.rider_id)
+                     Buffers: shared hit=2
+                     ->  Seq Scan on trip t  (cost=0.00..1.06 rows=1 width=17) (actual rows=1 loops=1)
+                           Filter: ((status)::text = 'completed'::text)
+                           Rows Removed by Filter: 4
+                           Buffers: shared hit=1
+                     ->  Seq Scan on rider r  (cost=0.00..1.04 rows=4 width=16) (actual rows=1 loops=1)
+                           Buffers: shared hit=1
+               ->  Seq Scan on driver d  (cost=0.00..1.03 rows=3 width=16) (actual rows=1 loops=1)
+                     Buffers: shared hit=1
+         ->  Seq Scan on payment p  (cost=0.00..1.01 rows=1 width=17) (actual rows=1 loops=1)
+               Filter: ((status)::text = 'succeeded'::text)
+               Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=16
+(26 rows)
+
+== Q2. Trip counts and fares by pickup zone ==
+   pickup_zone   | trips | completed | cancelled | total_fares | avg_fare | collected 
+-----------------+-------+-----------+-----------+-------------+----------+-----------
+ Ikeja           |     1 |         0 |         0 |           0 |          |         0
+ Lekki           |     1 |         1 |         0 |     4850.00 |  4850.00 |   4850.00
+ Surulere        |     1 |         0 |         0 |           0 |          |         0
+ Victoria Island |     1 |         0 |         1 |           0 |          |         0
+ Yaba            |     1 |         0 |         0 |           0 |          |         0
+(5 rows)
+
+== Q2 plan ==
+                                             QUERY PLAN                                             
+----------------------------------------------------------------------------------------------------
+ HashAggregate  (cost=2.18..2.26 rows=5 width=88) (actual rows=5 loops=1)
+   Group Key: t.pickup_zone
+   Batches: 1  Memory Usage: 24kB
+   Buffers: shared hit=2
+   ->  Hash Left Join  (cost=1.02..2.10 rows=5 width=38) (actual rows=5 loops=1)
+         Hash Cond: (t.trip_id = p.trip_id)
+         Buffers: shared hit=2
+         ->  Seq Scan on trip t  (cost=0.00..1.05 rows=5 width=27) (actual rows=5 loops=1)
+               Buffers: shared hit=1
+         ->  Hash  (cost=1.01..1.01 rows=1 width=19) (actual rows=1 loops=1)
+               Buckets: 1024  Batches: 1  Memory Usage: 9kB
+               Buffers: shared hit=1
+               ->  Seq Scan on payment p  (cost=0.00..1.01 rows=1 width=19) (actual rows=1 loops=1)
+                     Buffers: shared hit=1
+(14 rows)
+
+== Q3. Active trips requested between 08:00 and 09:00 on 5 October ==
+ trip_id |   status    |    rider     | pickup_zone |      requested_at      
+---------+-------------+--------------+-------------+------------------------
+       2 | in_progress | Tobi Adeyemi | Yaba        | 2026-10-05 08:05:00+01
+       3 | assigned    | Chiamaka Obi | Ikeja       | 2026-10-05 08:20:00+01
+(2 rows)
+
+== Q3 plan ==
+                                                                                                             QUERY PLAN                                                                                                             
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=2.19..2.19 rows=1 width=42) (actual rows=2 loops=1)
+   Sort Key: t.requested_at
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=3
+   ->  Nested Loop  (cost=0.00..2.18 rows=1 width=42) (actual rows=2 loops=1)
+         Join Filter: (r.rider_id = t.rider_id)
+         Rows Removed by Join Filter: 3
+         Buffers: shared hit=3
+         ->  Seq Scan on trip t  (cost=0.00..1.09 rows=1 width=34) (actual rows=2 loops=1)
+               Filter: (((status)::text = ANY ('{assigned,in_progress}'::text[])) AND (requested_at >= '2026-10-05 08:00:00+01'::timestamp with time zone) AND (requested_at < '2026-10-05 09:00:00+01'::timestamp with time zone))
+               Rows Removed by Filter: 3
+               Buffers: shared hit=1
+         ->  Seq Scan on rider r  (cost=0.00..1.04 rows=4 width=16) (actual rows=2 loops=2)
+               Buffers: shared hit=2
+ Planning:
+   Buffers: shared hit=8
+(16 rows)
+

@@ -1,0 +1,9 @@
+Bitmap Heap Scan on perf_trip  (cost=5.72..306.72 rows=140 width=31) (actual time=1.404..1.515 rows=151 loops=1)
+  Recheck Cond: ((requested_at >= '2026-10-01 00:00:00+01'::timestamp with time zone) AND (requested_at < '2026-10-03 00:00:00+01'::timestamp with time zone))
+  Heap Blocks: exact=116
+  Buffers: shared hit=119
+  ->  Bitmap Index Scan on ix_perf_trip_requested_at  (cost=0.00..5.69 rows=140 width=0) (actual time=1.385..1.386 rows=151 loops=1)
+        Index Cond: ((requested_at >= '2026-10-01 00:00:00+01'::timestamp with time zone) AND (requested_at < '2026-10-03 00:00:00+01'::timestamp with time zone))
+        Buffers: shared hit=3
+Planning Time: 0.058 ms
+Execution Time: 1.538 ms

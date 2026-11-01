@@ -1,0 +1,35 @@
+{
+  "postgres_version": "16.15 (Ubuntu 16.15-0ubuntu0.24.04.1)",
+  "table_rows": 20000,
+  "table_size": "3656 kB",
+  "index_size": "456 kB",
+  "query": "SELECT trip_id, rider_id, pickup_zone, status, fare_amount\nFROM perf_trip\nWHERE requested_at >= '2026-10-01 00:00+01'\n  AND requested_at <  '2026-10-03 00:00+01'",
+  "warmup_runs": 5,
+  "timed_runs": 31,
+  "phases": [
+    {
+      "phase": "no index (table scan)",
+      "plan_node": "Seq Scan on perf_trip",
+      "uses_index": false,
+      "rows_returned": 151,
+      "result_md5": "c88c7f439df611aebf725c4a63e442f7",
+      "median_ms": 3.668,
+      "min_ms": 2.743,
+      "max_ms": 9.243,
+      "runs": 31
+    },
+    {
+      "phase": "B-tree index",
+      "plan_node": "Bitmap Heap Scan on perf_trip",
+      "uses_index": true,
+      "rows_returned": 151,
+      "result_md5": "c88c7f439df611aebf725c4a63e442f7",
+      "median_ms": 0.67,
+      "min_ms": 0.518,
+      "max_ms": 1.431,
+      "runs": 31
+    }
+  ],
+  "same_result": true,
+  "median_speedup": 5.47
+}

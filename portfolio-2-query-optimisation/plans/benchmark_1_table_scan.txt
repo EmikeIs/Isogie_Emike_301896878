@@ -1,0 +1,6 @@
+Seq Scan on perf_trip  (cost=0.00..757.00 rows=140 width=31) (actual time=0.145..1.907 rows=151 loops=1)
+  Filter: ((requested_at >= '2026-10-01 00:00:00+01'::timestamp with time zone) AND (requested_at < '2026-10-03 00:00:00+01'::timestamp with time zone))
+  Rows Removed by Filter: 19849
+  Buffers: shared hit=457
+Planning Time: 0.054 ms
+Execution Time: 1.927 ms
