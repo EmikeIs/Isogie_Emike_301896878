@@ -1,0 +1,16 @@
+{
+  "name": "isogie-emike-301896878-adb-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MIT 8103 Advanced Database Systems portfolio: Ride-Hailing Trip and Payment Records",
+  "scripts": {
+    "benchmark": "node portfolio-2-query-optimisation/src/benchmark.js",
+    "concurrency": "node portfolio-3-transactions-concurrency/src/two_sessions.js",
+    "nosql": "node portfolio-4-nosql/src/run_trip_events.js"
+  },
+  "engines": { "node": ">=18" },
+  "dependencies": {
+    "mongodb": "^6.10.0",
+    "pg": "^8.13.0"
+  }
+}
